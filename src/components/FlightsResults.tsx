@@ -12,13 +12,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Alert from "@mui/material/Alert";
 import Noflights from "../assets/no-flight.png";
 
-interface Flight {
-  price: { formatted: string };
-  legs: Array<any>;
-}
-
+// Define the interface for the component props
 interface FlightResultsAccordionProps {
-  flights: { data?: { itineraries: Array<any> } };
+  flights: {
+    data?: {
+      itineraries: any[];  // Define more specific type if possible
+    };
+  };
 }
 
 export default function FlightResultsAccordion({ flights }: FlightResultsAccordionProps) {
@@ -36,25 +36,18 @@ export default function FlightResultsAccordion({ flights }: FlightResultsAccordi
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <CircularProgress />
+      <div className="flex justify-center items-center min-h-[40vh] bg-gray-50">
+        <CircularProgress size={40} thickness={4} className="text-blue-600" />
       </div>
     );
   }
 
   if (!itineraries || itineraries.length === 0) {
-    return (
-      <div>
-        <img className="m-auto" src={Noflights} alt="no-flights" />
-        <h1 className="font-semibold text-2xl lg:text-4xl text-center mb-5">
-          No flights available
-        </h1>
-      </div>
-    );
+    return null; // Remove the no flights div and image, just return null
   }
 
   return (
-    <Stack className="lg:mx-24" spacing={2}>
+    <Stack className="lg:mx-24 my-4 space-y-2" spacing={2}>
       {itineraries.map((itinerary: any, index: number) => {
         const price = itinerary?.price?.formatted || "N/A";
         const legs = itinerary?.legs || [];
@@ -69,15 +62,31 @@ export default function FlightResultsAccordion({ flights }: FlightResultsAccordi
         const logoUrl = firstLeg?.carriers?.marketing[0]?.logoUrl || "";
 
         return (
-          <Accordion key={index}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>
-                <strong>Departure:</strong>{" "}
-                {new Date(departure).toLocaleTimeString()} from {origin}{" "}
-                {new Date(departure).toLocaleDateString()} - {price}
+          <Accordion 
+            key={index}
+            className="border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+          >
+            <AccordionSummary 
+              expandIcon={<ExpandMoreIcon className="text-blue-600" />}
+              className="bg-gradient-to-r from-blue-50 to-white"
+            >
+              <Typography className="flex items-center space-x-4">
+                {logoUrl && (
+                  <img
+                    src={logoUrl}
+                    alt={carrier}
+                    className="w-8 h-8 object-contain"
+                  />
+                )}
+                <span>
+                  <strong className="text-blue-700">Departure:</strong>{" "}
+                  {new Date(departure).toLocaleTimeString()} from {origin}{" "}
+                  {new Date(departure).toLocaleDateString()} - 
+                  <span className="ml-2 text-green-600 font-bold">{price}</span>
+                </span>
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails className="bg-white p-6">
               <Typography>
                 <strong>Departure:</strong>{" "}
                 {new Date(departure).toLocaleTimeString()} from {origin}

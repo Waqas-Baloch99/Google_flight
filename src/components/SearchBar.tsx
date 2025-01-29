@@ -172,43 +172,40 @@ export default function SearchBar() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-500`}>
+      <div className={`min-h-[80vh] ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-500`}>
         {/* Theme Toggle */}
-        <div className="absolute top-4 right-4">
-          <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
+        <div className="absolute top-2 right-2">
+          <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit" size="small">
             {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
         </div>
 
         {/* Custom Header */}
-        <div className={`text-center pt-8 ${customAnimation}`}>
-          <h1 className={`text-4xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+        <div className={`text-center pt-4 ${customAnimation}`}>
+          <h1 className={`text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
             Find Your Perfect Flight
           </h1>
-          <p className={`text-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Search across multiple airlines with our advanced flight finder
+          <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Search across multiple airlines
           </p>
         </div>
 
-        {/* Existing search form with modified styling */}
-        <div className="container mx-auto mt-8 px-4">
+        {/* Search Container */}
+        <div className="container mx-auto mt-4 px-2">
           <div className={`
             ${darkMode ? 'bg-gray-800' : 'bg-white'} 
-            rounded-2xl shadow-2xl p-8 
+            rounded-xl shadow-lg p-4
             transform transition-all duration-300 
-            hover:scale-[1.02] hover:shadow-xl
+            hover:shadow-xl
             ${darkMode ? 'shadow-blue-500/20' : 'shadow-blue-200'}
           `}>
             {/* Trip Selection Row */}
-            <div className="flex flex-col md:flex-row gap-6 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
               <FormControl variant="standard" sx={{ 
-                m: 1, 
-                minWidth: 150,
+                m: 0.5, 
+                minWidth: 120,
                 '& .MuiInput-underline:before': {
                   borderBottomColor: '#3b82f6'
-                },
-                '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                  borderBottomColor: '#2563eb'
                 }
               }}>
                 <InputLabel id="demo-simple-select-standard-label">
@@ -231,7 +228,7 @@ export default function SearchBar() {
 
               <div className="md:pl-6">
                 <FormControl variant="standard" sx={{ 
-                  m: 1, 
+                  m: 0.5, 
                   minWidth: 24,
                   '& .MuiInput-underline:before': {
                     borderBottomColor: '#3b82f6'
@@ -258,8 +255,8 @@ export default function SearchBar() {
 
               <div className="md:pl-6">
                 <FormControl variant="standard" sx={{ 
-                  m: 1, 
-                  minWidth: 150,
+                  m: 0.5, 
+                  minWidth: 120,
                   '& .MuiInput-underline:before': {
                     borderBottomColor: '#3b82f6'
                   }
@@ -286,8 +283,8 @@ export default function SearchBar() {
             </div>
 
             {/* Search Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="grid grid-cols-2 gap-4 bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 bg-gradient-to-r from-blue-50 to-white p-3 rounded-lg">
                 <div className="flex items-center p-2">
                   <Autocomplete
                     id="manageable-states-demo"
@@ -354,7 +351,7 @@ export default function SearchBar() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl shadow-sm">
+              <div className="grid grid-cols-2 gap-3 bg-gradient-to-r from-blue-50 to-white p-3 rounded-lg">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker", "DatePicker"]}>
                     <DatePicker
@@ -394,46 +391,40 @@ export default function SearchBar() {
           </div>
         </div>
 
-        {/* Custom Footer */}
-        <div className={`text-center mt-8 pb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          <p>Powered by Advanced Flight Search Technology</p>
-          <p className="text-sm mt-2">Real-time prices and availability</p>
+        {/* Search Button */}
+        <div className="flex flex-col items-center gap-2 mt-4">
+          <button
+            onClick={handleSearch}
+            className="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-md hover:shadow-blue-200 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+          >
+            <Search className="w-4 h-4" />
+            <span className="text-sm font-medium">{isLoading ? "Searching..." : "Explore"}</span>
+          </button>
+          
+          {searchTime > 0 && !isLoading && (
+            <div className="text-xs text-gray-600 animate-fade-in">
+              Search completed in {searchTime.toFixed(2)} seconds
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Search Button */}
-      <div className="flex flex-col items-center gap-4 mt-6">
-        <button
-          onClick={handleSearch}
-          className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-lg hover:shadow-blue-200 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
-        >
-          <Search className="w-5 h-5" />
-          <span className="font-medium">{isLoading ? "Searching..." : "Explore"}</span>
-        </button>
-        
-        {searchTime > 0 && !isLoading && (
-          <div className="text-sm text-gray-600 animate-fade-in">
-            Search completed in {searchTime.toFixed(2)} seconds
-          </div>
-        )}
-      </div>
-
-      {/* Snackbar for error handling */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert
+        {/* Snackbar for error handling */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
           onClose={handleSnackbarClose}
-          severity="error"
-          sx={{ width: "100%" }}
         >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-      {/* flights card */}
-      <FlightResultsAccordion flights={flights} />
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+        {/* flights card */}
+        <FlightResultsAccordion flights={flights} />
+      </div>
     </ThemeProvider>
   );
 }

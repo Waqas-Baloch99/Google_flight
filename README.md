@@ -5,9 +5,13 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6)
 ![Tailwind](https://img.shields.io/badge/Tailwind-3.0-06B6D4)
 
+<<<<<<< HEAD
 A sophisticated flight search application with real-time data integration, dark mode support, and modern UI/UX design.
 
 ## ✨ Key Features
+=======
+## Features
+>>>>>>> 55e856b (changes)
 
 - 🌓 **Dynamic Theme Switching**: Seamless dark/light mode transition
 - 🔍 **Smart Search**: Intelligent airport autocomplete with caching

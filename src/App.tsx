@@ -11,7 +11,6 @@ function App() {
   return (
     <Router>
       <div className="overflow-hidden">
-        <img className="px-20" src={hero} alt="hero-image" />
         <div className="m-auto my-20">
           <h1 className="text-center font-normal text-6xl mt-[-50px] lg:mt-[-150px]">Flights</h1>
         </div>
@@ -20,10 +19,12 @@ function App() {
         {/* Define Routes for each page */}
         <Routes>
           {/* Home Route */}
-          <Route path="/" element={<div>Your home page content here</div>} />
+          <Route path="/" element={<div></div>} />
           {/* Contact Route */}
           <Route path="/contact" element={<Contact />} />
         </Routes>
+
+        {/* Footer - TODO: Add footer component here */}
       </div>
     </Router>
   );
