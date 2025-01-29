@@ -2,7 +2,6 @@
 
 Welcome!! Here is a fully responsive clone of Google Flights, built using React, TypeScript, Vite, and Material UI, with live flight data fetched from the Sky Scrapper API via RapidAPI.
 
-![Screenshot](./public/googleflightsclone.netlify.app.jpeg)
 
 ## Features
 
