@@ -1,24 +1,28 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
 import { CompareArrows, PersonOutline, Search } from "@mui/icons-material";
 import axios from "axios";
-
 import dayjs, { Dayjs } from "dayjs";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import noFlightImage from '../assets/no-flight.png';  // Add this import
+import { 
+  Snackbar, 
+  Alert,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Autocomplete
+} from "@mui/material";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Snackbar, Alert } from "@mui/material";
 import FlightResultsAccordion from "./FlightsResults";
-import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 export default function SearchBar() {
   const [trip, setTrip] = useState("");
@@ -32,7 +36,11 @@ export default function SearchBar() {
   const [originInputValue, setOriginInputValue] = useState("");
   const [destinationInputValue, setDestinationInputValue] = useState("");
   const [destination, setDestination] = useState<string | null>("");
-  const [flights, setFlights] = useState([]);
+  const [flights, setFlights] = useState<{ 
+    data?: { 
+      itineraries: any[] 
+    } | undefined
+  }>({ data: { itineraries: [] } });
 
   const [originId, setOriginId] = useState("");
   const [destinationId, setDestinationId] = useState("");
@@ -62,7 +70,6 @@ export default function SearchBar() {
   };
 
   // Shared function to fetch airports based on input value
-  // Memoize the fetchAirports function
   const fetchAirports = useCallback(async (query: string) => {
     try {
       const response = await axios.get(
@@ -83,7 +90,6 @@ export default function SearchBar() {
     }
   }, []);
 
-  // Memoize airport options based on input values
   const memoizedOriginOptions = useMemo(() => {
     if (originInputValue.length > 2) {
       return fetchAirports(originInputValue);
@@ -134,7 +140,6 @@ export default function SearchBar() {
         {
           params,
           headers: {
-            // put the api key in an env file
             "X-RapidAPI-Key": import.meta.env.VITE_RAPIDAPI_KEY,
             "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
           },
@@ -167,8 +172,61 @@ export default function SearchBar() {
     [darkMode],
   );
 
-  // Custom animation class
   const customAnimation = "animate-float";
+  const maxDate = useMemo(() => dayjs().add(1, 'year'), []);
+  const minDate = useMemo(() => dayjs(), []);
+
+  const handleDepartureChange = (newValue: Dayjs | null) => {
+    if (!newValue) {
+      setDeparture(null);
+      return;
+    }
+
+    if (newValue.isBefore(minDate, 'day')) {
+      setSnackbarMessage("Departure date cannot be in the past");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (newValue.isAfter(maxDate)) {
+      setSnackbarMessage("Departure date cannot be more than 1 year from now");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    setDeparture(newValue);
+
+    if (returnDate && newValue.isAfter(returnDate)) {
+      setReturnDate(newValue);
+    }
+  };
+
+  const handleReturnChange = (newValue: Dayjs | null) => {
+    if (!newValue) {
+      setReturnDate(null);
+      return;
+    }
+
+    if (!departure) {
+      setSnackbarMessage("Please select a departure date first");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (newValue.isBefore(departure)) {
+      setSnackbarMessage("Return date must be after departure date");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (newValue.isAfter(maxDate)) {
+      setSnackbarMessage("Return date cannot be more than 1 year from now");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    setReturnDate(newValue);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -356,7 +414,7 @@ export default function SearchBar() {
                   <DemoContainer components={["DatePicker", "DatePicker"]}>
                     <DatePicker
                       value={departure}
-                      onChange={(newValue) => setDeparture(newValue)}
+                      onChange={handleDepartureChange}
                       sx={{
                         '& .MuiInputBase-root': {
                           borderRadius: '12px',
@@ -373,7 +431,7 @@ export default function SearchBar() {
                   <DemoContainer components={["DatePicker", "DatePicker"]}>
                     <DatePicker
                       value={returnDate}
-                      onChange={(newValue) => setReturnDate(newValue)}
+                      onChange={handleReturnChange}
                       sx={{
                         '& .MuiInputBase-root': {
                           borderRadius: '12px',
@@ -408,6 +466,25 @@ export default function SearchBar() {
           )}
         </div>
 
+        {/* Flight Results */}
+        {!isLoading && flights.data?.itineraries?.length > 0 && (
+          <FlightResultsAccordion flights={flights} />
+        )}
+
+        {/* No Flights Found Image */}
+        {!isLoading && flights.data?.itineraries?.length === 0 && (
+          <div className="flex flex-col items-center mt-8">
+            <img 
+              src={noFlightImage}
+              alt="No flights found" 
+              className="max-w-xs opacity-75"
+            />
+            <p className={`text-center mt-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              No flights found for your search criteria
+            </p>
+          </div>
+        )}
+
         {/* Snackbar for error handling */}
         <Snackbar
           open={snackbarOpen}
@@ -422,31 +499,7 @@ export default function SearchBar() {
             {snackbarMessage}
           </Alert>
         </Snackbar>
-        {/* flights card */}
-        <FlightResultsAccordion flights={flights} />
       </div>
     </ThemeProvider>
   );
 }
-
-// Add this to your CSS/Tailwind config
-const customStyles = `
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-  }
-  
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in;
-  }
-`;

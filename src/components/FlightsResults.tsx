@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Alert from "@mui/material/Alert";
-import Noflights from "../assets/no-flight.png";
 
 // Define the interface for the component props
 interface FlightResultsAccordionProps {
